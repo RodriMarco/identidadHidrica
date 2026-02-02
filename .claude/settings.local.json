@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del \"c:\\\\Users\\\\User\\\\Documents\\\\identidad-hidrica\\\\assets\\\\img\\\\identidad hidrica logo.jpeg\")",
+      "Bash(dir \"c:\\\\Users\\\\User\\\\Documents\\\\identidad-hidrica\\\\assets\\\\img\"\" 2>nul || echo \"Carpeta no existe \")"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+nul
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-*
+
+# Logs
+*.log
+error_log
+
+# Uploads de usuarios (opcional - descomenta si no quieres subirlos)
+# uploads/*
+# !uploads/.gitkeep
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*~
+
+# Dependencias (si usas composer en el futuro)
+/vendor/
+
+# Variables de entorno (si las usas)
+.env
+.env.local
