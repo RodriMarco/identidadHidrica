@@ -1,0 +1,50 @@
+{
+    "mundo-agro": {
+        "cantidad": 3,
+        "activo": true,
+        "banners": {
+            "izquierda": {
+                "titulo": "",
+                "url": "https:\/\/google.com.ar",
+                "imagen": "uploads\/1770066779_kimblelogo.png"
+            },
+            "centro": {
+                "titulo": "",
+                "url": "https:\/\/google.com.ar",
+                "imagen": "uploads\/1770066779_60th-wallpaper-blue.jpg"
+            },
+            "derecha": {
+                "titulo": "",
+                "url": "https:\/\/google.com.ar",
+                "imagen": "uploads\/1770066779_60th-wallpaper-tile-blue.jpg"
+            }
+        }
+    },
+    "agro-sustentabilidad": {
+        "cantidad": 1,
+        "activo": true,
+        "banners": {
+            "centro": {
+                "titulo": "Pepito",
+                "url": "https:\/\/cariverplate.com.ar",
+                "imagen": "uploads\/1770075600_riverlogo.jpg"
+            }
+        }
+    },
+    "sustentabilidad-columnas": {
+        "cantidad": 2,
+        "activo": true,
+        "banners": {
+            "izquierda": {
+                "titulo": "Pepito 2",
+                "url": "https:\/\/google.com.ar",
+                "imagen": "uploads\/1770075649_amv.jpg"
+            },
+            "derecha": {
+                "titulo": "e",
+                "url": "https:\/\/google.com.ar",
+                "imagen": "uploads\/1770075649_ac78dac7f0e90a6e72394649c5f768dc.jpg"
+            }
+        }
+    }
+}

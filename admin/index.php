@@ -22,7 +22,7 @@ $videos = getVideos();
         <nav class="admin-nav">
             <a href="index.php" class="active">Dashboard</a>
             <a href="articulos.php">Artículos</a>
-            <a href="videos.php">Videos</a>
+            <a href="videos.php">Podcast</a>
             <a href="publicidad.php">Publicidad</a>
             <a href="configuracion.php">Configuración</a>
             <a href="../index.php" target="_blank">Ver sitio</a>

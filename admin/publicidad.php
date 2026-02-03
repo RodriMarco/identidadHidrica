@@ -46,8 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Configuración por defecto para la zona mundo-agro
+// Configuración por defecto para las zonas publicitarias
 $zonaMundoAgro = $config['mundo-agro'] ?? ['cantidad' => 0, 'activo' => false, 'banners' => []];
+$zonaAgroSustentabilidad = $config['agro-sustentabilidad'] ?? ['cantidad' => 0, 'activo' => false, 'banners' => []];
+$zonaSustentabilidadColumnas = $config['sustentabilidad-columnas'] ?? ['cantidad' => 0, 'activo' => false, 'banners' => []];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -178,7 +180,10 @@ $zonaMundoAgro = $config['mundo-agro'] ?? ['cantidad' => 0, 'activo' => false, '
                         <div class="banner-slot">
                             <h4>Banner <?= $zonaMundoAgro['cantidad'] == 2 ? 'Derecha (450x250)' : 'Centro (350x250)' ?></h4>
                             <?php
-                            $b2 = $zonaMundoAgro['banners']['derecha'] ?? $zonaMundoAgro['banners']['centro'] ?? ['titulo' => '', 'url' => '', 'imagen' => ''];
+                            // Con 2 banners: izq y der. Con 3 banners: izq, centro, der
+                            $b2 = ($zonaMundoAgro['cantidad'] == 3)
+                                ? ($zonaMundoAgro['banners']['centro'] ?? ['titulo' => '', 'url' => '', 'imagen' => ''])
+                                : ($zonaMundoAgro['banners']['derecha'] ?? ['titulo' => '', 'url' => '', 'imagen' => '']);
                             ?>
                             <input type="hidden" name="imagen_actual_2" value="<?= htmlspecialchars($b2['imagen']) ?>">
                             <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
@@ -207,9 +212,300 @@ $zonaMundoAgro = $config['mundo-agro'] ?? ['cantidad' => 0, 'activo' => false, '
                             <h4>Banner Derecha (350x250)</h4>
                             <?php
                             $b3 = $zonaMundoAgro['banners']['derecha'] ?? ['titulo' => '', 'url' => '', 'imagen' => ''];
-                            if ($zonaMundoAgro['cantidad'] == 3) {
-                                $b3 = $zonaMundoAgro['banners']['derecha'] ?? ['titulo' => '', 'url' => '', 'imagen' => ''];
-                            }
+                            ?>
+                            <input type="hidden" name="imagen_actual_3" value="<?= htmlspecialchars($b3['imagen']) ?>">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                                <div class="form-group" style="margin:0;">
+                                    <label>Titulo/Anunciante</label>
+                                    <input type="text" name="titulo_3" value="<?= htmlspecialchars($b3['titulo']) ?>" placeholder="Nombre del anunciante">
+                                </div>
+                                <div class="form-group" style="margin:0;">
+                                    <label>URL de destino</label>
+                                    <input type="url" name="url_3" value="<?= htmlspecialchars($b3['url']) ?>" placeholder="https://...">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top:15px;">
+                                <label>Imagen (PNG con transparencia recomendado)</label>
+                                <input type="file" name="imagen_3" accept="image/*">
+                                <?php if (!empty($b3['imagen'])): ?>
+                                <img src="../<?= $b3['imagen'] ?>" class="banner-preview" alt="Preview">
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" style="margin-top:20px;">Guardar Configuracion</button>
+            </form>
+        </div>
+
+        <!-- Zona: Entre Agro y Sustentabilidad -->
+        <div class="admin-card" style="margin-bottom:30px;">
+            <h2>Entre Secciones: Agro - Sustentabilidad</h2>
+            <p style="color:#666;margin-bottom:20px;">Configura los banners que apareceran entre las secciones Agro y Sustentabilidad en la portada.</p>
+
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="save_config">
+                <input type="hidden" name="zona" value="agro-sustentabilidad">
+
+                <div style="display:flex;gap:20px;align-items:center;margin-bottom:20px;">
+                    <div class="form-group" style="margin:0;">
+                        <label>Cantidad de banners</label>
+                        <select name="cantidad" id="cantidad-agro-sustentabilidad" onchange="actualizarBanners('agro-sustentabilidad', this.value)" style="width:200px;">
+                            <option value="0" <?= $zonaAgroSustentabilidad['cantidad'] == 0 ? 'selected' : '' ?>>Sin publicidad</option>
+                            <option value="1" <?= $zonaAgroSustentabilidad['cantidad'] == 1 ? 'selected' : '' ?>>1 banner (970x250)</option>
+                            <option value="2" <?= $zonaAgroSustentabilidad['cantidad'] == 2 ? 'selected' : '' ?>>2 banners (450x250 c/u)</option>
+                            <option value="3" <?= $zonaAgroSustentabilidad['cantidad'] == 3 ? 'selected' : '' ?>>3 banners (350x250 c/u)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label>&nbsp;</label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                            <input type="checkbox" name="activo" <?= !empty($zonaAgroSustentabilidad['activo']) ? 'checked' : '' ?>>
+                            Mostrar en el sitio
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Guía de tamaños -->
+                <div class="size-guide" id="size-guide-agro-sustentabilidad">
+                    <div class="size-item" data-cant="1">
+                        <div style="background:#ddd;width:194px;height:50px;margin:0 auto;border-radius:4px;"></div>
+                        <strong>1 Banner</strong>
+                        <small>970 x 250 px</small>
+                    </div>
+                    <div class="size-item" data-cant="2">
+                        <div style="display:flex;gap:10px;justify-content:center;">
+                            <div style="background:#ddd;width:90px;height:50px;border-radius:4px;"></div>
+                            <div style="background:#ddd;width:90px;height:50px;border-radius:4px;"></div>
+                        </div>
+                        <strong>2 Banners</strong>
+                        <small>450 x 250 px c/u</small>
+                    </div>
+                    <div class="size-item" data-cant="3">
+                        <div style="display:flex;gap:5px;justify-content:center;">
+                            <div style="background:#ddd;width:60px;height:45px;border-radius:4px;"></div>
+                            <div style="background:#ddd;width:60px;height:45px;border-radius:4px;"></div>
+                            <div style="background:#ddd;width:60px;height:45px;border-radius:4px;"></div>
+                        </div>
+                        <strong>3 Banners</strong>
+                        <small>350 x 250 px c/u</small>
+                    </div>
+                </div>
+
+                <!-- Configuración de banners -->
+                <div id="banners-agro-sustentabilidad">
+                    <!-- Banner 1 -->
+                    <div class="banner-config <?= $zonaAgroSustentabilidad['cantidad'] >= 1 ? 'active' : '' ?>" id="banner-agro-sustentabilidad-1">
+                        <div class="banner-slot">
+                            <h4>Banner <?= $zonaAgroSustentabilidad['cantidad'] == 1 ? '(Centro - 970x250)' : ($zonaAgroSustentabilidad['cantidad'] == 2 ? 'Izquierda (450x250)' : 'Izquierda (350x250)') ?></h4>
+                            <?php
+                            $b1 = $zonaAgroSustentabilidad['banners']['izquierda'] ?? $zonaAgroSustentabilidad['banners']['centro'] ?? ['titulo' => '', 'url' => '', 'imagen' => ''];
+                            ?>
+                            <input type="hidden" name="imagen_actual_1" value="<?= htmlspecialchars($b1['imagen']) ?>">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                                <div class="form-group" style="margin:0;">
+                                    <label>Titulo/Anunciante</label>
+                                    <input type="text" name="titulo_1" value="<?= htmlspecialchars($b1['titulo']) ?>" placeholder="Nombre del anunciante">
+                                </div>
+                                <div class="form-group" style="margin:0;">
+                                    <label>URL de destino</label>
+                                    <input type="url" name="url_1" value="<?= htmlspecialchars($b1['url']) ?>" placeholder="https://...">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top:15px;">
+                                <label>Imagen (PNG con transparencia recomendado)</label>
+                                <input type="file" name="imagen_1" accept="image/*">
+                                <?php if (!empty($b1['imagen'])): ?>
+                                <img src="../<?= $b1['imagen'] ?>" class="banner-preview" alt="Preview">
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Banner 2 -->
+                    <div class="banner-config <?= $zonaAgroSustentabilidad['cantidad'] >= 2 ? 'active' : '' ?>" id="banner-agro-sustentabilidad-2">
+                        <div class="banner-slot">
+                            <h4>Banner <?= $zonaAgroSustentabilidad['cantidad'] == 2 ? 'Derecha (450x250)' : 'Centro (350x250)' ?></h4>
+                            <?php
+                            $b2 = ($zonaAgroSustentabilidad['cantidad'] == 3)
+                                ? ($zonaAgroSustentabilidad['banners']['centro'] ?? ['titulo' => '', 'url' => '', 'imagen' => ''])
+                                : ($zonaAgroSustentabilidad['banners']['derecha'] ?? ['titulo' => '', 'url' => '', 'imagen' => '']);
+                            ?>
+                            <input type="hidden" name="imagen_actual_2" value="<?= htmlspecialchars($b2['imagen']) ?>">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                                <div class="form-group" style="margin:0;">
+                                    <label>Titulo/Anunciante</label>
+                                    <input type="text" name="titulo_2" value="<?= htmlspecialchars($b2['titulo']) ?>" placeholder="Nombre del anunciante">
+                                </div>
+                                <div class="form-group" style="margin:0;">
+                                    <label>URL de destino</label>
+                                    <input type="url" name="url_2" value="<?= htmlspecialchars($b2['url']) ?>" placeholder="https://...">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top:15px;">
+                                <label>Imagen (PNG con transparencia recomendado)</label>
+                                <input type="file" name="imagen_2" accept="image/*">
+                                <?php if (!empty($b2['imagen'])): ?>
+                                <img src="../<?= $b2['imagen'] ?>" class="banner-preview" alt="Preview">
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Banner 3 -->
+                    <div class="banner-config <?= $zonaAgroSustentabilidad['cantidad'] >= 3 ? 'active' : '' ?>" id="banner-agro-sustentabilidad-3">
+                        <div class="banner-slot">
+                            <h4>Banner Derecha (350x250)</h4>
+                            <?php
+                            $b3 = $zonaAgroSustentabilidad['banners']['derecha'] ?? ['titulo' => '', 'url' => '', 'imagen' => ''];
+                            ?>
+                            <input type="hidden" name="imagen_actual_3" value="<?= htmlspecialchars($b3['imagen']) ?>">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                                <div class="form-group" style="margin:0;">
+                                    <label>Titulo/Anunciante</label>
+                                    <input type="text" name="titulo_3" value="<?= htmlspecialchars($b3['titulo']) ?>" placeholder="Nombre del anunciante">
+                                </div>
+                                <div class="form-group" style="margin:0;">
+                                    <label>URL de destino</label>
+                                    <input type="url" name="url_3" value="<?= htmlspecialchars($b3['url']) ?>" placeholder="https://...">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top:15px;">
+                                <label>Imagen (PNG con transparencia recomendado)</label>
+                                <input type="file" name="imagen_3" accept="image/*">
+                                <?php if (!empty($b3['imagen'])): ?>
+                                <img src="../<?= $b3['imagen'] ?>" class="banner-preview" alt="Preview">
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" style="margin-top:20px;">Guardar Configuracion</button>
+            </form>
+        </div>
+
+        <!-- Zona: Entre Sustentabilidad y Columnas -->
+        <div class="admin-card" style="margin-bottom:30px;">
+            <h2>Entre Secciones: Sustentabilidad - Columnas de Opinion</h2>
+            <p style="color:#666;margin-bottom:20px;">Configura los banners que apareceran entre las secciones Sustentabilidad y Columnas de Opinion en la portada.</p>
+
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="save_config">
+                <input type="hidden" name="zona" value="sustentabilidad-columnas">
+
+                <div style="display:flex;gap:20px;align-items:center;margin-bottom:20px;">
+                    <div class="form-group" style="margin:0;">
+                        <label>Cantidad de banners</label>
+                        <select name="cantidad" id="cantidad-sustentabilidad-columnas" onchange="actualizarBanners('sustentabilidad-columnas', this.value)" style="width:200px;">
+                            <option value="0" <?= $zonaSustentabilidadColumnas['cantidad'] == 0 ? 'selected' : '' ?>>Sin publicidad</option>
+                            <option value="1" <?= $zonaSustentabilidadColumnas['cantidad'] == 1 ? 'selected' : '' ?>>1 banner (970x250)</option>
+                            <option value="2" <?= $zonaSustentabilidadColumnas['cantidad'] == 2 ? 'selected' : '' ?>>2 banners (450x250 c/u)</option>
+                            <option value="3" <?= $zonaSustentabilidadColumnas['cantidad'] == 3 ? 'selected' : '' ?>>3 banners (350x250 c/u)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label>&nbsp;</label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                            <input type="checkbox" name="activo" <?= !empty($zonaSustentabilidadColumnas['activo']) ? 'checked' : '' ?>>
+                            Mostrar en el sitio
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Guía de tamaños -->
+                <div class="size-guide" id="size-guide-sustentabilidad-columnas">
+                    <div class="size-item" data-cant="1">
+                        <div style="background:#ddd;width:194px;height:50px;margin:0 auto;border-radius:4px;"></div>
+                        <strong>1 Banner</strong>
+                        <small>970 x 250 px</small>
+                    </div>
+                    <div class="size-item" data-cant="2">
+                        <div style="display:flex;gap:10px;justify-content:center;">
+                            <div style="background:#ddd;width:90px;height:50px;border-radius:4px;"></div>
+                            <div style="background:#ddd;width:90px;height:50px;border-radius:4px;"></div>
+                        </div>
+                        <strong>2 Banners</strong>
+                        <small>450 x 250 px c/u</small>
+                    </div>
+                    <div class="size-item" data-cant="3">
+                        <div style="display:flex;gap:5px;justify-content:center;">
+                            <div style="background:#ddd;width:60px;height:45px;border-radius:4px;"></div>
+                            <div style="background:#ddd;width:60px;height:45px;border-radius:4px;"></div>
+                            <div style="background:#ddd;width:60px;height:45px;border-radius:4px;"></div>
+                        </div>
+                        <strong>3 Banners</strong>
+                        <small>350 x 250 px c/u</small>
+                    </div>
+                </div>
+
+                <!-- Configuración de banners -->
+                <div id="banners-sustentabilidad-columnas">
+                    <!-- Banner 1 -->
+                    <div class="banner-config <?= $zonaSustentabilidadColumnas['cantidad'] >= 1 ? 'active' : '' ?>" id="banner-sustentabilidad-columnas-1">
+                        <div class="banner-slot">
+                            <h4>Banner <?= $zonaSustentabilidadColumnas['cantidad'] == 1 ? '(Centro - 970x250)' : ($zonaSustentabilidadColumnas['cantidad'] == 2 ? 'Izquierda (450x250)' : 'Izquierda (350x250)') ?></h4>
+                            <?php
+                            $b1 = $zonaSustentabilidadColumnas['banners']['izquierda'] ?? $zonaSustentabilidadColumnas['banners']['centro'] ?? ['titulo' => '', 'url' => '', 'imagen' => ''];
+                            ?>
+                            <input type="hidden" name="imagen_actual_1" value="<?= htmlspecialchars($b1['imagen']) ?>">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                                <div class="form-group" style="margin:0;">
+                                    <label>Titulo/Anunciante</label>
+                                    <input type="text" name="titulo_1" value="<?= htmlspecialchars($b1['titulo']) ?>" placeholder="Nombre del anunciante">
+                                </div>
+                                <div class="form-group" style="margin:0;">
+                                    <label>URL de destino</label>
+                                    <input type="url" name="url_1" value="<?= htmlspecialchars($b1['url']) ?>" placeholder="https://...">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top:15px;">
+                                <label>Imagen (PNG con transparencia recomendado)</label>
+                                <input type="file" name="imagen_1" accept="image/*">
+                                <?php if (!empty($b1['imagen'])): ?>
+                                <img src="../<?= $b1['imagen'] ?>" class="banner-preview" alt="Preview">
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Banner 2 -->
+                    <div class="banner-config <?= $zonaSustentabilidadColumnas['cantidad'] >= 2 ? 'active' : '' ?>" id="banner-sustentabilidad-columnas-2">
+                        <div class="banner-slot">
+                            <h4>Banner <?= $zonaSustentabilidadColumnas['cantidad'] == 2 ? 'Derecha (450x250)' : 'Centro (350x250)' ?></h4>
+                            <?php
+                            $b2 = ($zonaSustentabilidadColumnas['cantidad'] == 3)
+                                ? ($zonaSustentabilidadColumnas['banners']['centro'] ?? ['titulo' => '', 'url' => '', 'imagen' => ''])
+                                : ($zonaSustentabilidadColumnas['banners']['derecha'] ?? ['titulo' => '', 'url' => '', 'imagen' => '']);
+                            ?>
+                            <input type="hidden" name="imagen_actual_2" value="<?= htmlspecialchars($b2['imagen']) ?>">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                                <div class="form-group" style="margin:0;">
+                                    <label>Titulo/Anunciante</label>
+                                    <input type="text" name="titulo_2" value="<?= htmlspecialchars($b2['titulo']) ?>" placeholder="Nombre del anunciante">
+                                </div>
+                                <div class="form-group" style="margin:0;">
+                                    <label>URL de destino</label>
+                                    <input type="url" name="url_2" value="<?= htmlspecialchars($b2['url']) ?>" placeholder="https://...">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top:15px;">
+                                <label>Imagen (PNG con transparencia recomendado)</label>
+                                <input type="file" name="imagen_2" accept="image/*">
+                                <?php if (!empty($b2['imagen'])): ?>
+                                <img src="../<?= $b2['imagen'] ?>" class="banner-preview" alt="Preview">
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Banner 3 -->
+                    <div class="banner-config <?= $zonaSustentabilidadColumnas['cantidad'] >= 3 ? 'active' : '' ?>" id="banner-sustentabilidad-columnas-3">
+                        <div class="banner-slot">
+                            <h4>Banner Derecha (350x250)</h4>
+                            <?php
+                            $b3 = $zonaSustentabilidadColumnas['banners']['derecha'] ?? ['titulo' => '', 'url' => '', 'imagen' => ''];
                             ?>
                             <input type="hidden" name="imagen_actual_3" value="<?= htmlspecialchars($b3['imagen']) ?>">
                             <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
@@ -280,10 +576,13 @@ $zonaMundoAgro = $config['mundo-agro'] ?? ['cantidad' => 0, 'activo' => false, '
 
     // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', function() {
-        const select = document.getElementById('cantidad-mundo-agro');
-        if (select) {
-            actualizarBanners('mundo-agro', select.value);
-        }
+        const zonas = ['mundo-agro', 'agro-sustentabilidad', 'sustentabilidad-columnas'];
+        zonas.forEach(zona => {
+            const select = document.getElementById('cantidad-' + zona);
+            if (select) {
+                actualizarBanners(zona, select.value);
+            }
+        });
     });
     </script>
 </body>

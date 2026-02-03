@@ -74,7 +74,17 @@ global $CATEGORIAS;
     <title>Artículos | Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
-    <style>body{background:#f5f8fa;} .img-preview{max-width:200px;border-radius:8px;margin-top:10px;}</style>
+    <style>body{background:#f5f8fa;} .img-preview{max-width:200px;border-radius:8px;margin-top:10px;}
+    /* Estilos para Quill */
+    .ql-editor { min-height: 400px; font-family: 'Poppins', sans-serif; font-size: 16px; line-height: 1.7; }
+    .ql-container { font-size: 16px; }
+    .ql-toolbar { background: #f8f9fa; border-radius: 8px 8px 0 0; }
+    .ql-container { border-radius: 0 0 8px 8px; background: white; }
+    #editor-container { margin-bottom: 15px; }
+    </style>
+    <!-- Quill Editor (100% gratuito) -->
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 </head>
 <body>
     <header class="admin-header">
@@ -84,7 +94,7 @@ global $CATEGORIAS;
         <nav class="admin-nav">
             <a href="index.php">Dashboard</a>
             <a href="articulos.php" class="active">Artículos</a>
-            <a href="videos.php">Videos</a>
+            <a href="videos.php">Podcast</a>
             <a href="publicidad.php">Publicidad</a>
             <a href="configuracion.php">Configuración</a>
             <a href="../index.php" target="_blank">Ver sitio</a>
@@ -118,8 +128,9 @@ global $CATEGORIAS;
                 
                 <div class="form-group">
                     <label>Contenido *</label>
-                    <textarea name="contenido" required style="min-height:400px;" placeholder="Escribí el contenido. Podés usar HTML: <p>, <h2>, <strong>, <blockquote>"><?= htmlspecialchars($articulo['contenido'] ?? '') ?></textarea>
-                    <small style="color:#666;">Tip: Usá &lt;p&gt; para párrafos, &lt;h2&gt; para subtítulos, &lt;blockquote&gt; para citas.</small>
+                    <div id="editor-container"></div>
+                    <textarea name="contenido" id="contenido-hidden" required style="display:none;"><?= htmlspecialchars($articulo['contenido'] ?? '') ?></textarea>
+                    <small style="color:#666;">Usa la barra de herramientas para dar formato: negrita, cursiva, subtitulos, listas, imagenes, etc.</small>
                 </div>
                 
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
@@ -209,5 +220,41 @@ global $CATEGORIAS;
         </div>
         <?php endif; ?>
     </div>
+
+    <?php if ($action === 'new' || $action === 'edit'): ?>
+    <script>
+    // Inicializar Quill Editor
+    var quill = new Quill('#editor-container', {
+        theme: 'snow',
+        placeholder: 'Escribi el contenido del articulo...',
+        modules: {
+            toolbar: [
+                [{ 'header': [2, 3, 4, false] }],
+                [{ 'font': [] }],
+                [{ 'size': ['small', false, 'large', 'huge'] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'align': [] }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                ['blockquote'],
+                ['link', 'image', 'video'],
+                ['clean']
+            ]
+        }
+    });
+
+    // Cargar contenido existente
+    var contenidoInicial = document.getElementById('contenido-hidden').value;
+    if (contenidoInicial) {
+        quill.root.innerHTML = contenidoInicial;
+    }
+
+    // Sincronizar con el textarea oculto antes de enviar
+    document.querySelector('form').addEventListener('submit', function() {
+        document.getElementById('contenido-hidden').value = quill.root.innerHTML;
+    });
+    </script>
+    <?php endif; ?>
 </body>
 </html>

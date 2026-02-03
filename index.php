@@ -279,6 +279,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
         </section>
         <?php endif; ?>
 
+        <!-- Publicidad entre Agro y Sustentabilidad -->
+        <?php
+        $zonaAgroSustentabilidad = $pubConfig['agro-sustentabilidad'] ?? null;
+        if ($zonaAgroSustentabilidad && !empty($zonaAgroSustentabilidad['activo']) && $zonaAgroSustentabilidad['cantidad'] > 0):
+            $cantidad = (int)$zonaAgroSustentabilidad['cantidad'];
+            $banners = $zonaAgroSustentabilidad['banners'] ?? [];
+        ?>
+        <section class="ad-zone-between-sections">
+            <div class="container">
+                <div class="ad-zone-banners ad-count-<?= $cantidad ?>">
+                    <?php
+                    if ($cantidad == 1) {
+                        $posiciones = ['centro'];
+                    } elseif ($cantidad == 2) {
+                        $posiciones = ['izquierda', 'derecha'];
+                    } else {
+                        $posiciones = ['izquierda', 'centro', 'derecha'];
+                    }
+
+                    foreach ($posiciones as $pos):
+                        $banner = $banners[$pos] ?? null;
+                        if ($banner && !empty($banner['imagen'])):
+                    ?>
+                    <a href="<?= htmlspecialchars($banner['url'] ?: '#') ?>" class="ad-zone-banner" target="_blank" rel="noopener" title="<?= htmlspecialchars($banner['titulo'] ?? '') ?>">
+                        <img src="<?= htmlspecialchars($banner['imagen']) ?>" alt="<?= htmlspecialchars($banner['titulo'] ?? 'Publicidad') ?>">
+                    </a>
+                    <?php
+                        endif;
+                    endforeach;
+                    ?>
+                </div>
+            </div>
+        </section>
+        <?php endif; ?>
+
         <!-- Sustentabilidad -->
         <?php if (!empty($sustentabilidad)): ?>
         <section class="section">
@@ -305,6 +340,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
                         </div>
                     </article>
                     <?php endforeach; ?>
+                </div>
+            </div>
+        </section>
+        <?php endif; ?>
+
+        <!-- Publicidad entre Sustentabilidad y Columnas -->
+        <?php
+        $zonaSustentabilidadColumnas = $pubConfig['sustentabilidad-columnas'] ?? null;
+        if ($zonaSustentabilidadColumnas && !empty($zonaSustentabilidadColumnas['activo']) && $zonaSustentabilidadColumnas['cantidad'] > 0):
+            $cantidad = (int)$zonaSustentabilidadColumnas['cantidad'];
+            $banners = $zonaSustentabilidadColumnas['banners'] ?? [];
+        ?>
+        <section class="ad-zone-between-sections">
+            <div class="container">
+                <div class="ad-zone-banners ad-count-<?= $cantidad ?>">
+                    <?php
+                    if ($cantidad == 1) {
+                        $posiciones = ['centro'];
+                    } elseif ($cantidad == 2) {
+                        $posiciones = ['izquierda', 'derecha'];
+                    } else {
+                        $posiciones = ['izquierda', 'centro', 'derecha'];
+                    }
+
+                    foreach ($posiciones as $pos):
+                        $banner = $banners[$pos] ?? null;
+                        if ($banner && !empty($banner['imagen'])):
+                    ?>
+                    <a href="<?= htmlspecialchars($banner['url'] ?: '#') ?>" class="ad-zone-banner" target="_blank" rel="noopener" title="<?= htmlspecialchars($banner['titulo'] ?? '') ?>">
+                        <img src="<?= htmlspecialchars($banner['imagen']) ?>" alt="<?= htmlspecialchars($banner['titulo'] ?? 'Publicidad') ?>">
+                    </a>
+                    <?php
+                        endif;
+                    endforeach;
+                    ?>
                 </div>
             </div>
         </section>
