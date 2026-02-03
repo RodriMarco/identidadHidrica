@@ -22,7 +22,7 @@
     },
     "agro-sustentabilidad": {
         "cantidad": 1,
-        "activo": true,
+        "activo": false,
         "banners": {
             "centro": {
                 "titulo": "Pepito",

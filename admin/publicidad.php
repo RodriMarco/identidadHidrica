@@ -70,6 +70,27 @@ $zonaSustentabilidadColumnas = $config['sustentabilidad-columnas'] ?? ['cantidad
         .size-item { text-align: center; padding: 15px; background: #fff; border-radius: 8px; border: 2px dashed #ddd; }
         .size-item.active { border-color: #1976d2; background: #e3f2fd; }
         .size-item strong { display: block; margin-top: 10px; }
+
+        /* Acordeon */
+        .accordion-card { margin-bottom: 15px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .accordion-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; background: white; cursor: pointer; border: none; width: 100%; text-align: left; transition: background 0.2s; }
+        .accordion-header:hover { background: #f8f9fa; }
+        .accordion-header h3 { margin: 0; font-family: var(--font-display); font-size: 1.2rem; color: #0a1628; display: flex; align-items: center; gap: 10px; }
+        .accordion-header .status-badge { font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; font-weight: 500; }
+        .accordion-header .status-badge.active { background: #d4edda; color: #155724; }
+        .accordion-header .status-badge.inactive { background: #f8d7da; color: #721c24; }
+        .accordion-arrow { font-size: 1.2rem; transition: transform 0.3s ease; color: #666; }
+        .accordion-card.open .accordion-arrow { transform: rotate(180deg); }
+        .accordion-content { display: none; padding: 25px; background: #fafbfc; border-top: 1px solid #eee; }
+        .accordion-card.open .accordion-content { display: block; }
+
+        /* Toggle Switch */
+        .toggle-switch { position: relative; display: inline-block; cursor: pointer; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .toggle-slider { position: relative; display: inline-block; width: 50px; height: 26px; background: #dc3545; border-radius: 26px; transition: 0.3s; }
+        .toggle-slider:before { content: ""; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .toggle-switch input:checked + .toggle-slider { background: #28a745; }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); }
     </style>
 </head>
 <body>
@@ -90,37 +111,43 @@ $zonaSustentabilidadColumnas = $config['sustentabilidad-columnas'] ?? ['cantidad
         <?php if ($mensaje): ?><div class="message success"><?= $mensaje ?></div><?php endif; ?>
 
         <h2 style="font-family:var(--font-display);font-size:2rem;margin-bottom:30px;">Publicidad</h2>
+        <p style="color:#666;margin-bottom:25px;">Configura los banners publicitarios que aparecen entre las secciones de la portada. Haz clic en cada seccion para expandir y configurar.</p>
 
         <!-- Zona: Entre Mundo y Agro -->
-        <div class="admin-card" style="margin-bottom:30px;">
-            <h2>Entre Secciones: Mundo - Agro</h2>
-            <p style="color:#666;margin-bottom:20px;">Configura los banners que apareceran entre las secciones Mundo y Agro en la portada.</p>
+        <div class="accordion-card" id="accordion-mundo-agro">
+            <div class="accordion-header" onclick="toggleAccordion('mundo-agro')">
+                <h3>
+                    Entre Secciones: Mundo - Agro
+                    <span class="status-badge <?= !empty($zonaMundoAgro['activo']) ? 'active' : 'inactive' ?>"><?= !empty($zonaMundoAgro['activo']) ? 'Activo' : 'Inactivo' ?></span>
+                </h3>
+                <span class="accordion-arrow">▼</span>
+            </div>
+            <div class="accordion-content">
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="save_config">
+                    <input type="hidden" name="zona" value="mundo-agro">
 
-            <form method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="action" value="save_config">
-                <input type="hidden" name="zona" value="mundo-agro">
-
-                <div style="display:flex;gap:20px;align-items:center;margin-bottom:20px;">
-                    <div class="form-group" style="margin:0;">
-                        <label>Cantidad de banners</label>
-                        <select name="cantidad" id="cantidad-mundo-agro" onchange="actualizarBanners('mundo-agro', this.value)" style="width:200px;">
-                            <option value="0" <?= $zonaMundoAgro['cantidad'] == 0 ? 'selected' : '' ?>>Sin publicidad</option>
-                            <option value="1" <?= $zonaMundoAgro['cantidad'] == 1 ? 'selected' : '' ?>>1 banner (970x250)</option>
-                            <option value="2" <?= $zonaMundoAgro['cantidad'] == 2 ? 'selected' : '' ?>>2 banners (450x250 c/u)</option>
-                            <option value="3" <?= $zonaMundoAgro['cantidad'] == 3 ? 'selected' : '' ?>>3 banners (350x250 c/u)</option>
-                        </select>
+                    <div style="display:flex;gap:30px;align-items:center;margin-bottom:25px;flex-wrap:wrap;">
+                        <div class="form-group" style="margin:0;">
+                            <label>Cantidad de banners</label>
+                            <select name="cantidad" id="cantidad-mundo-agro" onchange="actualizarBanners('mundo-agro', this.value)" style="width:200px;">
+                                <option value="0" <?= $zonaMundoAgro['cantidad'] == 0 ? 'selected' : '' ?>>Sin publicidad</option>
+                                <option value="1" <?= $zonaMundoAgro['cantidad'] == 1 ? 'selected' : '' ?>>1 banner (970x250)</option>
+                                <option value="2" <?= $zonaMundoAgro['cantidad'] == 2 ? 'selected' : '' ?>>2 banners (450x250 c/u)</option>
+                                <option value="3" <?= $zonaMundoAgro['cantidad'] == 3 ? 'selected' : '' ?>>3 banners (350x250 c/u)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label style="margin-bottom:8px;display:block;">Mostrar en el sitio</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="activo" <?= !empty($zonaMundoAgro['activo']) ? 'checked' : '' ?>>
+                                <span class="toggle-slider"></span>
+                                                            </label>
+                        </div>
                     </div>
-                    <div class="form-group" style="margin:0;">
-                        <label>&nbsp;</label>
-                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-                            <input type="checkbox" name="activo" <?= !empty($zonaMundoAgro['activo']) ? 'checked' : '' ?>>
-                            Mostrar en el sitio
-                        </label>
-                    </div>
-                </div>
 
-                <!-- Guía de tamaños -->
-                <div class="size-guide" id="size-guide-mundo-agro">
+                    <!-- Guía de tamaños -->
+                    <div class="size-guide" id="size-guide-mundo-agro">
                     <div class="size-item" data-cant="1">
                         <div style="background:#ddd;width:194px;height:50px;margin:0 auto;border-radius:4px;"></div>
                         <strong>1 Banner</strong>
@@ -235,40 +262,46 @@ $zonaSustentabilidadColumnas = $config['sustentabilidad-columnas'] ?? ['cantidad
                     </div>
                 </div>
 
-                <button type="submit" class="btn-primary" style="margin-top:20px;">Guardar Configuracion</button>
-            </form>
+                    <button type="submit" class="btn-primary" style="margin-top:20px;">Guardar Configuracion</button>
+                </form>
+            </div>
         </div>
 
         <!-- Zona: Entre Agro y Sustentabilidad -->
-        <div class="admin-card" style="margin-bottom:30px;">
-            <h2>Entre Secciones: Agro - Sustentabilidad</h2>
-            <p style="color:#666;margin-bottom:20px;">Configura los banners que apareceran entre las secciones Agro y Sustentabilidad en la portada.</p>
+        <div class="accordion-card" id="accordion-agro-sustentabilidad">
+            <div class="accordion-header" onclick="toggleAccordion('agro-sustentabilidad')">
+                <h3>
+                    Entre Secciones: Agro - Sustentabilidad
+                    <span class="status-badge <?= !empty($zonaAgroSustentabilidad['activo']) ? 'active' : 'inactive' ?>"><?= !empty($zonaAgroSustentabilidad['activo']) ? 'Activo' : 'Inactivo' ?></span>
+                </h3>
+                <span class="accordion-arrow">▼</span>
+            </div>
+            <div class="accordion-content">
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="save_config">
+                    <input type="hidden" name="zona" value="agro-sustentabilidad">
 
-            <form method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="action" value="save_config">
-                <input type="hidden" name="zona" value="agro-sustentabilidad">
-
-                <div style="display:flex;gap:20px;align-items:center;margin-bottom:20px;">
-                    <div class="form-group" style="margin:0;">
-                        <label>Cantidad de banners</label>
-                        <select name="cantidad" id="cantidad-agro-sustentabilidad" onchange="actualizarBanners('agro-sustentabilidad', this.value)" style="width:200px;">
-                            <option value="0" <?= $zonaAgroSustentabilidad['cantidad'] == 0 ? 'selected' : '' ?>>Sin publicidad</option>
-                            <option value="1" <?= $zonaAgroSustentabilidad['cantidad'] == 1 ? 'selected' : '' ?>>1 banner (970x250)</option>
-                            <option value="2" <?= $zonaAgroSustentabilidad['cantidad'] == 2 ? 'selected' : '' ?>>2 banners (450x250 c/u)</option>
-                            <option value="3" <?= $zonaAgroSustentabilidad['cantidad'] == 3 ? 'selected' : '' ?>>3 banners (350x250 c/u)</option>
-                        </select>
+                    <div style="display:flex;gap:30px;align-items:center;margin-bottom:25px;flex-wrap:wrap;">
+                        <div class="form-group" style="margin:0;">
+                            <label>Cantidad de banners</label>
+                            <select name="cantidad" id="cantidad-agro-sustentabilidad" onchange="actualizarBanners('agro-sustentabilidad', this.value)" style="width:200px;">
+                                <option value="0" <?= $zonaAgroSustentabilidad['cantidad'] == 0 ? 'selected' : '' ?>>Sin publicidad</option>
+                                <option value="1" <?= $zonaAgroSustentabilidad['cantidad'] == 1 ? 'selected' : '' ?>>1 banner (970x250)</option>
+                                <option value="2" <?= $zonaAgroSustentabilidad['cantidad'] == 2 ? 'selected' : '' ?>>2 banners (450x250 c/u)</option>
+                                <option value="3" <?= $zonaAgroSustentabilidad['cantidad'] == 3 ? 'selected' : '' ?>>3 banners (350x250 c/u)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label style="margin-bottom:8px;display:block;">Mostrar en el sitio</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="activo" <?= !empty($zonaAgroSustentabilidad['activo']) ? 'checked' : '' ?>>
+                                <span class="toggle-slider"></span>
+                                                            </label>
+                        </div>
                     </div>
-                    <div class="form-group" style="margin:0;">
-                        <label>&nbsp;</label>
-                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-                            <input type="checkbox" name="activo" <?= !empty($zonaAgroSustentabilidad['activo']) ? 'checked' : '' ?>>
-                            Mostrar en el sitio
-                        </label>
-                    </div>
-                </div>
 
-                <!-- Guía de tamaños -->
-                <div class="size-guide" id="size-guide-agro-sustentabilidad">
+                    <!-- Guía de tamaños -->
+                    <div class="size-guide" id="size-guide-agro-sustentabilidad">
                     <div class="size-item" data-cant="1">
                         <div style="background:#ddd;width:194px;height:50px;margin:0 auto;border-radius:4px;"></div>
                         <strong>1 Banner</strong>
@@ -382,40 +415,46 @@ $zonaSustentabilidadColumnas = $config['sustentabilidad-columnas'] ?? ['cantidad
                     </div>
                 </div>
 
-                <button type="submit" class="btn-primary" style="margin-top:20px;">Guardar Configuracion</button>
-            </form>
+                    <button type="submit" class="btn-primary" style="margin-top:20px;">Guardar Configuracion</button>
+                </form>
+            </div>
         </div>
 
         <!-- Zona: Entre Sustentabilidad y Columnas -->
-        <div class="admin-card" style="margin-bottom:30px;">
-            <h2>Entre Secciones: Sustentabilidad - Columnas de Opinion</h2>
-            <p style="color:#666;margin-bottom:20px;">Configura los banners que apareceran entre las secciones Sustentabilidad y Columnas de Opinion en la portada.</p>
+        <div class="accordion-card" id="accordion-sustentabilidad-columnas">
+            <div class="accordion-header" onclick="toggleAccordion('sustentabilidad-columnas')">
+                <h3>
+                    Entre Secciones: Sustentabilidad - Columnas de Opinion
+                    <span class="status-badge <?= !empty($zonaSustentabilidadColumnas['activo']) ? 'active' : 'inactive' ?>"><?= !empty($zonaSustentabilidadColumnas['activo']) ? 'Activo' : 'Inactivo' ?></span>
+                </h3>
+                <span class="accordion-arrow">▼</span>
+            </div>
+            <div class="accordion-content">
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="save_config">
+                    <input type="hidden" name="zona" value="sustentabilidad-columnas">
 
-            <form method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="action" value="save_config">
-                <input type="hidden" name="zona" value="sustentabilidad-columnas">
-
-                <div style="display:flex;gap:20px;align-items:center;margin-bottom:20px;">
-                    <div class="form-group" style="margin:0;">
-                        <label>Cantidad de banners</label>
-                        <select name="cantidad" id="cantidad-sustentabilidad-columnas" onchange="actualizarBanners('sustentabilidad-columnas', this.value)" style="width:200px;">
-                            <option value="0" <?= $zonaSustentabilidadColumnas['cantidad'] == 0 ? 'selected' : '' ?>>Sin publicidad</option>
-                            <option value="1" <?= $zonaSustentabilidadColumnas['cantidad'] == 1 ? 'selected' : '' ?>>1 banner (970x250)</option>
-                            <option value="2" <?= $zonaSustentabilidadColumnas['cantidad'] == 2 ? 'selected' : '' ?>>2 banners (450x250 c/u)</option>
-                            <option value="3" <?= $zonaSustentabilidadColumnas['cantidad'] == 3 ? 'selected' : '' ?>>3 banners (350x250 c/u)</option>
-                        </select>
+                    <div style="display:flex;gap:30px;align-items:center;margin-bottom:25px;flex-wrap:wrap;">
+                        <div class="form-group" style="margin:0;">
+                            <label>Cantidad de banners</label>
+                            <select name="cantidad" id="cantidad-sustentabilidad-columnas" onchange="actualizarBanners('sustentabilidad-columnas', this.value)" style="width:200px;">
+                                <option value="0" <?= $zonaSustentabilidadColumnas['cantidad'] == 0 ? 'selected' : '' ?>>Sin publicidad</option>
+                                <option value="1" <?= $zonaSustentabilidadColumnas['cantidad'] == 1 ? 'selected' : '' ?>>1 banner (970x250)</option>
+                                <option value="2" <?= $zonaSustentabilidadColumnas['cantidad'] == 2 ? 'selected' : '' ?>>2 banners (450x250 c/u)</option>
+                                <option value="3" <?= $zonaSustentabilidadColumnas['cantidad'] == 3 ? 'selected' : '' ?>>3 banners (350x250 c/u)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label style="margin-bottom:8px;display:block;">Mostrar en el sitio</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="activo" <?= !empty($zonaSustentabilidadColumnas['activo']) ? 'checked' : '' ?>>
+                                <span class="toggle-slider"></span>
+                                                            </label>
+                        </div>
                     </div>
-                    <div class="form-group" style="margin:0;">
-                        <label>&nbsp;</label>
-                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-                            <input type="checkbox" name="activo" <?= !empty($zonaSustentabilidadColumnas['activo']) ? 'checked' : '' ?>>
-                            Mostrar en el sitio
-                        </label>
-                    </div>
-                </div>
 
-                <!-- Guía de tamaños -->
-                <div class="size-guide" id="size-guide-sustentabilidad-columnas">
+                    <!-- Guía de tamaños -->
+                    <div class="size-guide" id="size-guide-sustentabilidad-columnas">
                     <div class="size-item" data-cant="1">
                         <div style="background:#ddd;width:194px;height:50px;margin:0 auto;border-radius:4px;"></div>
                         <strong>1 Banner</strong>
@@ -529,12 +568,19 @@ $zonaSustentabilidadColumnas = $config['sustentabilidad-columnas'] ?? ['cantidad
                     </div>
                 </div>
 
-                <button type="submit" class="btn-primary" style="margin-top:20px;">Guardar Configuracion</button>
-            </form>
+                    <button type="submit" class="btn-primary" style="margin-top:20px;">Guardar Configuracion</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <script>
+    // Funcion para abrir/cerrar acordeon
+    function toggleAccordion(zona) {
+        const card = document.getElementById('accordion-' + zona);
+        card.classList.toggle('open');
+    }
+
     function actualizarBanners(zona, cantidad) {
         cantidad = parseInt(cantidad);
 

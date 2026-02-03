@@ -129,7 +129,7 @@ global $CATEGORIAS;
                 <div class="form-group">
                     <label>Contenido *</label>
                     <div id="editor-container"></div>
-                    <textarea name="contenido" id="contenido-hidden" required style="display:none;"><?= htmlspecialchars($articulo['contenido'] ?? '') ?></textarea>
+                    <textarea name="contenido" id="contenido-hidden" style="display:none;"><?= htmlspecialchars($articulo['contenido'] ?? '') ?></textarea>
                     <small style="color:#666;">Usa la barra de herramientas para dar formato: negrita, cursiva, subtitulos, listas, imagenes, etc.</small>
                 </div>
                 
@@ -251,8 +251,16 @@ global $CATEGORIAS;
     }
 
     // Sincronizar con el textarea oculto antes de enviar
-    document.querySelector('form').addEventListener('submit', function() {
-        document.getElementById('contenido-hidden').value = quill.root.innerHTML;
+    document.querySelector('form').addEventListener('submit', function(e) {
+        var contenido = quill.root.innerHTML;
+        // Verificar que no esté vacío (solo tags vacíos)
+        var textoPlano = quill.getText().trim();
+        if (!textoPlano || textoPlano.length === 0) {
+            e.preventDefault();
+            alert('Por favor, ingresa el contenido del artículo.');
+            return false;
+        }
+        document.getElementById('contenido-hidden').value = contenido;
     });
     </script>
     <?php endif; ?>
