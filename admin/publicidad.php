@@ -44,12 +44,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mensaje = 'Configuración guardada correctamente';
         $config = getPublicidadConfig();
     }
+
+    // Guardar configuración de laterales sticky
+    if ($action === 'save_laterales') {
+        $config['laterales'] = [
+            'activo' => isset($_POST['activo']),
+            'izquierda' => [
+                'titulo' => $_POST['titulo_izq'] ?? '',
+                'url' => $_POST['url_izq'] ?? '#',
+                'imagen' => $_POST['imagen_actual_izq'] ?? ''
+            ],
+            'derecha' => [
+                'titulo' => $_POST['titulo_der'] ?? '',
+                'url' => $_POST['url_der'] ?? '#',
+                'imagen' => $_POST['imagen_actual_der'] ?? ''
+            ]
+        ];
+
+        // Subir imagen izquierda
+        if (!empty($_FILES['imagen_izq']['name'])) {
+            $result = subirImagen($_FILES['imagen_izq']);
+            if (isset($result['url'])) {
+                $config['laterales']['izquierda']['imagen'] = $result['url'];
+            }
+        }
+
+        // Subir imagen derecha
+        if (!empty($_FILES['imagen_der']['name'])) {
+            $result = subirImagen($_FILES['imagen_der']);
+            if (isset($result['url'])) {
+                $config['laterales']['derecha']['imagen'] = $result['url'];
+            }
+        }
+
+        guardarPublicidadConfig($config);
+        $mensaje = 'Publicidad lateral guardada correctamente';
+        $config = getPublicidadConfig();
+    }
+
+    // Guardar configuración de intersticial
+    if ($action === 'save_intersticial') {
+        $config['intersticial'] = [
+            'activo' => isset($_POST['activo']),
+            'titulo' => $_POST['titulo'] ?? '',
+            'url' => $_POST['url'] ?? '#',
+            'imagen' => $_POST['imagen_actual'] ?? '',
+            'duracion' => (int)($_POST['duracion'] ?? 5),
+            'frecuencia' => $_POST['frecuencia'] ?? 'siempre'
+        ];
+
+        // Subir imagen
+        if (!empty($_FILES['imagen']['name'])) {
+            $result = subirImagen($_FILES['imagen']);
+            if (isset($result['url'])) {
+                $config['intersticial']['imagen'] = $result['url'];
+            }
+        }
+
+        guardarPublicidadConfig($config);
+        $mensaje = 'Anuncio intersticial guardado correctamente';
+        $config = getPublicidadConfig();
+    }
 }
 
 // Configuración por defecto para las zonas publicitarias
 $zonaMundoAgro = $config['mundo-agro'] ?? ['cantidad' => 0, 'activo' => false, 'banners' => []];
 $zonaAgroSustentabilidad = $config['agro-sustentabilidad'] ?? ['cantidad' => 0, 'activo' => false, 'banners' => []];
 $zonaSustentabilidadColumnas = $config['sustentabilidad-columnas'] ?? ['cantidad' => 0, 'activo' => false, 'banners' => []];
+
+// Configuración de laterales e intersticial
+$laterales = $config['laterales'] ?? ['activo' => false, 'izquierda' => ['titulo' => '', 'url' => '', 'imagen' => ''], 'derecha' => ['titulo' => '', 'url' => '', 'imagen' => '']];
+$intersticial = $config['intersticial'] ?? ['activo' => false, 'titulo' => '', 'url' => '', 'imagen' => '', 'duracion' => 5, 'frecuencia' => 'siempre'];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -569,6 +634,157 @@ $zonaSustentabilidadColumnas = $config['sustentabilidad-columnas'] ?? ['cantidad
                 </div>
 
                     <button type="submit" class="btn-primary" style="margin-top:20px;">Guardar Configuracion</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Separador visual -->
+        <div style="margin:40px 0;padding:20px 0;border-top:2px solid #e0e0e0;">
+            <h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:10px;color:#1976d2;">Publicidad Especial</h2>
+            <p style="color:#666;">Banners laterales sticky y anuncios intersticiales de pantalla completa.</p>
+        </div>
+
+        <!-- Publicidad Lateral Sticky -->
+        <div class="accordion-card" id="accordion-laterales">
+            <div class="accordion-header" onclick="toggleAccordion('laterales')">
+                <h3>
+                    Banners Laterales (Sticky)
+                    <span class="status-badge <?= !empty($laterales['activo']) ? 'active' : 'inactive' ?>"><?= !empty($laterales['activo']) ? 'Activo' : 'Inactivo' ?></span>
+                </h3>
+                <span class="accordion-arrow">▼</span>
+            </div>
+            <div class="accordion-content">
+                <p style="color:#666;margin-bottom:20px;background:#e3f2fd;padding:15px;border-radius:8px;">
+                    <strong>Banners laterales:</strong> Se muestran en los costados de la pantalla y permanecen visibles mientras el usuario hace scroll.
+                    Solo se muestran en pantallas grandes (mayor a 1400px). Tamaño recomendado: <strong>160x600px</strong> (Half Page vertical).
+                </p>
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="save_laterales">
+
+                    <div class="form-group" style="margin-bottom:25px;">
+                        <label style="margin-bottom:8px;display:block;">Mostrar en el sitio</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="activo" <?= !empty($laterales['activo']) ? 'checked' : '' ?>>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;">
+                        <!-- Banner Izquierdo -->
+                        <div class="banner-slot">
+                            <h4>Banner Izquierdo (160x600)</h4>
+                            <input type="hidden" name="imagen_actual_izq" value="<?= htmlspecialchars($laterales['izquierda']['imagen'] ?? '') ?>">
+                            <div class="form-group">
+                                <label>Titulo/Anunciante</label>
+                                <input type="text" name="titulo_izq" value="<?= htmlspecialchars($laterales['izquierda']['titulo'] ?? '') ?>" placeholder="Nombre del anunciante">
+                            </div>
+                            <div class="form-group">
+                                <label>URL de destino</label>
+                                <input type="url" name="url_izq" value="<?= htmlspecialchars($laterales['izquierda']['url'] ?? '') ?>" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Imagen (160x600px recomendado)</label>
+                                <input type="file" name="imagen_izq" accept="image/*">
+                                <?php if (!empty($laterales['izquierda']['imagen'])): ?>
+                                <img src="../<?= $laterales['izquierda']['imagen'] ?>" class="banner-preview" style="max-width:80px;max-height:300px;" alt="Preview">
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <!-- Banner Derecho -->
+                        <div class="banner-slot">
+                            <h4>Banner Derecho (160x600)</h4>
+                            <input type="hidden" name="imagen_actual_der" value="<?= htmlspecialchars($laterales['derecha']['imagen'] ?? '') ?>">
+                            <div class="form-group">
+                                <label>Titulo/Anunciante</label>
+                                <input type="text" name="titulo_der" value="<?= htmlspecialchars($laterales['derecha']['titulo'] ?? '') ?>" placeholder="Nombre del anunciante">
+                            </div>
+                            <div class="form-group">
+                                <label>URL de destino</label>
+                                <input type="url" name="url_der" value="<?= htmlspecialchars($laterales['derecha']['url'] ?? '') ?>" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Imagen (160x600px recomendado)</label>
+                                <input type="file" name="imagen_der" accept="image/*">
+                                <?php if (!empty($laterales['derecha']['imagen'])): ?>
+                                <img src="../<?= $laterales['derecha']['imagen'] ?>" class="banner-preview" style="max-width:80px;max-height:300px;" alt="Preview">
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="margin-top:20px;">Guardar Laterales</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Anuncio Intersticial -->
+        <div class="accordion-card" id="accordion-intersticial">
+            <div class="accordion-header" onclick="toggleAccordion('intersticial')">
+                <h3>
+                    Anuncio Intersticial (Pantalla Completa)
+                    <span class="status-badge <?= !empty($intersticial['activo']) ? 'active' : 'inactive' ?>"><?= !empty($intersticial['activo']) ? 'Activo' : 'Inactivo' ?></span>
+                </h3>
+                <span class="accordion-arrow">▼</span>
+            </div>
+            <div class="accordion-content">
+                <p style="color:#666;margin-bottom:20px;background:#fff3cd;padding:15px;border-radius:8px;">
+                    <strong>Anuncio intersticial:</strong> Se muestra a pantalla completa cuando el usuario carga la pagina principal por primera vez.
+                    Incluye boton de cerrar y contador de tiempo. Tamaño recomendado: <strong>800x600px</strong> o proporcional.
+                </p>
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="save_intersticial">
+                    <input type="hidden" name="imagen_actual" value="<?= htmlspecialchars($intersticial['imagen'] ?? '') ?>">
+
+                    <div style="display:flex;gap:30px;align-items:center;margin-bottom:25px;flex-wrap:wrap;">
+                        <div class="form-group" style="margin:0;">
+                            <label style="margin-bottom:8px;display:block;">Mostrar en el sitio</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="activo" <?= !empty($intersticial['activo']) ? 'checked' : '' ?>>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Duracion (segundos)</label>
+                            <select name="duracion" style="width:150px;">
+                                <option value="3" <?= ($intersticial['duracion'] ?? 5) == 3 ? 'selected' : '' ?>>3 segundos</option>
+                                <option value="5" <?= ($intersticial['duracion'] ?? 5) == 5 ? 'selected' : '' ?>>5 segundos</option>
+                                <option value="7" <?= ($intersticial['duracion'] ?? 5) == 7 ? 'selected' : '' ?>>7 segundos</option>
+                                <option value="10" <?= ($intersticial['duracion'] ?? 5) == 10 ? 'selected' : '' ?>>10 segundos</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Frecuencia</label>
+                            <select name="frecuencia" style="width:200px;">
+                                <option value="siempre" <?= ($intersticial['frecuencia'] ?? 'siempre') == 'siempre' ? 'selected' : '' ?>>Cada visita</option>
+                                <option value="una_vez" <?= ($intersticial['frecuencia'] ?? 'siempre') == 'una_vez' ? 'selected' : '' ?>>Una vez por sesion</option>
+                                <option value="diario" <?= ($intersticial['frecuencia'] ?? 'siempre') == 'diario' ? 'selected' : '' ?>>Una vez por dia</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="banner-slot">
+                        <h4>Contenido del Anuncio</h4>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                            <div class="form-group" style="margin:0;">
+                                <label>Titulo/Anunciante</label>
+                                <input type="text" name="titulo" value="<?= htmlspecialchars($intersticial['titulo'] ?? '') ?>" placeholder="Nombre del anunciante">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label>URL de destino</label>
+                                <input type="url" name="url" value="<?= htmlspecialchars($intersticial['url'] ?? '') ?>" placeholder="https://...">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top:15px;">
+                            <label>Imagen (800x600px o proporcional recomendado)</label>
+                            <input type="file" name="imagen" accept="image/*">
+                            <?php if (!empty($intersticial['imagen'])): ?>
+                            <img src="../<?= $intersticial['imagen'] ?>" class="banner-preview" style="max-width:300px;" alt="Preview">
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="margin-top:20px;">Guardar Intersticial</button>
                 </form>
             </div>
         </div>

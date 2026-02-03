@@ -22,7 +22,7 @@
     },
     "agro-sustentabilidad": {
         "cantidad": 1,
-        "activo": false,
+        "activo": true,
         "banners": {
             "centro": {
                 "titulo": "Pepito",
@@ -46,5 +46,26 @@
                 "imagen": "uploads\/1770075649_ac78dac7f0e90a6e72394649c5f768dc.jpg"
             }
         }
+    },
+    "laterales": {
+        "activo": true,
+        "izquierda": {
+            "titulo": "roro",
+            "url": "https:\/\/google.com.ar",
+            "imagen": "uploads\/1770080967_copa-libertadores.png"
+        },
+        "derecha": {
+            "titulo": "roros",
+            "url": "https:\/\/google.com.ar",
+            "imagen": "uploads\/1770080967_copa-del-mundo.jpeg"
+        }
+    },
+    "intersticial": {
+        "activo": true,
+        "titulo": "Ironboxing club",
+        "url": "https:\/\/google.com.ar",
+        "imagen": "uploads\/1770080989_captura-de-pantalla-2023-11-27-104631.png",
+        "duracion": 5,
+        "frecuencia": "siempre"
     }
 }

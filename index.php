@@ -66,6 +66,105 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+    <?php
+    // Configuración de publicidad lateral e intersticial
+    $laterales = $pubConfig['laterales'] ?? ['activo' => false];
+    $intersticial = $pubConfig['intersticial'] ?? ['activo' => false];
+    ?>
+
+    <!-- Anuncio Intersticial -->
+    <?php if (!empty($intersticial['activo']) && !empty($intersticial['imagen'])): ?>
+    <div class="intersticial-overlay" id="intersticial">
+        <div class="intersticial-container">
+            <button class="intersticial-close disabled" id="intersticial-close" onclick="cerrarIntersticial()" title="Cerrar">×</button>
+            <a href="<?= htmlspecialchars($intersticial['url'] ?: '#') ?>" target="_blank" rel="noopener">
+                <img src="<?= htmlspecialchars($intersticial['imagen']) ?>" alt="<?= htmlspecialchars($intersticial['titulo'] ?? 'Publicidad') ?>">
+            </a>
+            <span class="intersticial-timer" id="intersticial-timer">Cerrar en <span id="countdown"><?= (int)($intersticial['duracion'] ?? 5) ?></span>s</span>
+            <button class="intersticial-skip" id="intersticial-skip" onclick="cerrarIntersticial()">Continuar al sitio</button>
+        </div>
+    </div>
+    <script>
+    (function() {
+        var frecuencia = '<?= $intersticial['frecuencia'] ?? 'siempre' ?>';
+        var duracion = <?= (int)($intersticial['duracion'] ?? 5) ?>;
+        var storageKey = 'ih_intersticial_shown';
+        var mostrar = true;
+
+        // Verificar frecuencia
+        if (frecuencia === 'una_vez') {
+            if (sessionStorage.getItem(storageKey)) mostrar = false;
+        } else if (frecuencia === 'diario') {
+            var lastShown = localStorage.getItem(storageKey);
+            if (lastShown) {
+                var hoy = new Date().toDateString();
+                if (lastShown === hoy) mostrar = false;
+            }
+        }
+
+        if (mostrar) {
+            var overlay = document.getElementById('intersticial');
+            var closeBtn = document.getElementById('intersticial-close');
+            var timer = document.getElementById('intersticial-timer');
+            var skipBtn = document.getElementById('intersticial-skip');
+            var countdown = document.getElementById('countdown');
+
+            // Mostrar intersticial
+            setTimeout(function() {
+                overlay.classList.add('active');
+            }, 500);
+
+            // Countdown
+            var remaining = duracion;
+            var interval = setInterval(function() {
+                remaining--;
+                countdown.textContent = remaining;
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    closeBtn.classList.remove('disabled');
+                    timer.style.display = 'none';
+                    skipBtn.classList.add('visible');
+                }
+            }, 1000);
+
+            // Guardar que se mostró
+            if (frecuencia === 'una_vez') {
+                sessionStorage.setItem(storageKey, '1');
+            } else if (frecuencia === 'diario') {
+                localStorage.setItem(storageKey, new Date().toDateString());
+            }
+        }
+    })();
+
+    function cerrarIntersticial() {
+        var closeBtn = document.getElementById('intersticial-close');
+        if (!closeBtn.classList.contains('disabled')) {
+            document.getElementById('intersticial').classList.remove('active');
+        }
+    }
+    </script>
+    <?php endif; ?>
+
+    <!-- Publicidad Lateral Izquierda -->
+    <?php if (!empty($laterales['activo']) && !empty($laterales['izquierda']['imagen'])): ?>
+    <div class="lateral-ad izquierda">
+        <a href="<?= htmlspecialchars($laterales['izquierda']['url'] ?: '#') ?>" target="_blank" rel="noopener" title="<?= htmlspecialchars($laterales['izquierda']['titulo'] ?? 'Publicidad') ?>">
+            <img src="<?= htmlspecialchars($laterales['izquierda']['imagen']) ?>" alt="<?= htmlspecialchars($laterales['izquierda']['titulo'] ?? 'Publicidad') ?>">
+        </a>
+        <span class="ad-label">Publicidad</span>
+    </div>
+    <?php endif; ?>
+
+    <!-- Publicidad Lateral Derecha -->
+    <?php if (!empty($laterales['activo']) && !empty($laterales['derecha']['imagen'])): ?>
+    <div class="lateral-ad derecha">
+        <a href="<?= htmlspecialchars($laterales['derecha']['url'] ?: '#') ?>" target="_blank" rel="noopener" title="<?= htmlspecialchars($laterales['derecha']['titulo'] ?? 'Publicidad') ?>">
+            <img src="<?= htmlspecialchars($laterales['derecha']['imagen']) ?>" alt="<?= htmlspecialchars($laterales['derecha']['titulo'] ?? 'Publicidad') ?>">
+        </a>
+        <span class="ad-label">Publicidad</span>
+    </div>
+    <?php endif; ?>
+
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="container top-bar-content">
