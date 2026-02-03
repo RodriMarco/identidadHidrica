@@ -166,7 +166,7 @@ $intersticial = $config['intersticial'] ?? ['activo' => false, 'titulo' => '', '
             <a href="articulos.php">Articulos</a>
             <a href="videos.php">Podcast</a>
             <a href="publicidad.php" class="active">Publicidad</a>
-            <a href="configuracion.php">Configuracion</a>
+            <a href="configuracion.php">Configuración</a>
             <a href="../index.php" target="_blank">Ver sitio</a>
             <a href="logout.php">Salir</a>
         </nav>
