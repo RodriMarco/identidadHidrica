@@ -82,7 +82,7 @@ $articulos = getArticulos(null, $categoriaSlug);
                     <a href="index.php" class="btn">Volver al inicio</a>
                 </div>
                 <?php else: ?>
-                <div class="news-grid" style="grid-template-columns:repeat(3,1fr);">
+                <div class="news-grid-3">
                     <?php foreach ($articulos as $art): $artCat = getCategoria($art['categoria']); ?>
                     <article class="news-card" onclick="location.href='articulo.php?s=<?= $art['slug'] ?>'">
                         <div class="news-card-image">
