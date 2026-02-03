@@ -43,7 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$error) {
         $slugEdit = $_POST['slug_edit'] ?? null;
         $nuevoSlug = guardarArticulo($datos, $slugEdit);
-        header('Location: articulos.php?action=edit&slug=' . $nuevoSlug . '&msg=ok');
+        // Si es nuevo artículo, redirigir a formulario vacío con mensaje de éxito
+        // Si es edición, mantener en la página de edición
+        if ($slugEdit) {
+            header('Location: articulos.php?action=edit&slug=' . $nuevoSlug . '&msg=ok');
+        } else {
+            header('Location: articulos.php?action=new&msg=ok');
+        }
         exit;
     }
 }

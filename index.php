@@ -530,5 +530,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
             </div>
         </div>
     </footer>
+    <script>
+    // Fade-in en scroll para news cards
+    document.addEventListener('DOMContentLoaded', function() {
+        // Agregar clase fade-in-scroll a todas las news-card
+        const newsCards = document.querySelectorAll('.news-card');
+        newsCards.forEach(card => {
+            card.classList.add('fade-in-scroll');
+        });
+
+        // Intersection Observer para detectar cuando entran en viewport
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px 0px -50px 0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        newsCards.forEach(card => {
+            observer.observe(card);
+        });
+    });
+    </script>
 </body>
 </html>
