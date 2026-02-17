@@ -229,6 +229,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
                         <a href="categoria.php?c=sustentabilidad">Sustentabilidad ▾</a>
                         <div class="dropdown-menu">
                             <a href="categoria.php?c=gestion-agua">Gestión del Agua</a>
+                            <a href="categoria.php?c=cambio-climatico">Cambio Climático</a>
+                            <a href="categoria.php?c=conservacion">Conservación</a>
+                            <a href="categoria.php?c=economia-circular">Economía Circular</a>
                         </div>
                     </li>
                     <li class="dropdown">
@@ -617,8 +620,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h4>Multimedia</h4>
+                    <h4>Contacto</h4>
                     <ul>
+                        <li><a href="mailto:redaccion@identidadhidrica.com.ar">redaccion@identidadhidrica.com.ar</a></li>
+                        <li><a href="mailto:publicidad@identidadhidrica.com.ar">publicidad@identidadhidrica.com.ar</a></li>
                         <li><a href="videos.php">Podcast</a></li>
                         <li><a href="nosotros.php">Nosotros</a></li>
                     </ul>

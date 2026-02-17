@@ -228,6 +228,11 @@ img { max-width: 100%; height: auto; }
     .footer-grid { grid-template-columns: 1fr; text-align: center; }
     .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
     .article-title { font-size: 2rem; }
+    /* Ajustar títulos en móvil para mostrar mejor las imágenes */
+    .hero-overlay h1 { font-size: 1.4rem; line-height: 1.3; }
+    .hero-overlay h2 { font-size: 1rem; margin-top: 8px; }
+    .hero-overlay p { font-size: 0.85rem; }
+    .hero-overlay { padding: 20px; }
 }
 
 /* Admin Styles */

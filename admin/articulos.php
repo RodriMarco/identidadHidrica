@@ -181,9 +181,10 @@ global $CATEGORIAS;
                 
                 <div style="display:flex;gap:15px;margin-top:30px;">
                     <button type="submit" class="btn-primary"><?= $action === 'new' ? 'Publicar' : 'Guardar' ?></button>
+                    <button type="button" onclick="previewArticulo()" class="btn-primary" style="background:#17a2b8;color:#fff;">Vista Previa</button>
                     <a href="articulos.php" class="btn-primary btn-secondary">Cancelar</a>
                     <?php if ($articulo): ?>
-                    <a href="../articulo.php?s=<?= $slug ?>" target="_blank" class="btn-primary" style="background:#d4edda;color:#155724;">Ver</a>
+                    <a href="../articulo.php?s=<?= $slug ?>" target="_blank" class="btn-primary" style="background:#d4edda;color:#155724;">Ver Publicado</a>
                     <?php endif; ?>
                 </div>
             </form>
@@ -268,6 +269,51 @@ global $CATEGORIAS;
         }
         document.getElementById('contenido-hidden').value = contenido;
     });
+
+    // Función de vista previa
+    function previewArticulo() {
+        // Obtener los valores del formulario
+        var titulo = document.querySelector('input[name="titulo"]').value;
+        var extracto = document.querySelector('input[name="extracto"]').value;
+        var contenido = quill.root.innerHTML;
+        var categoria = document.querySelector('select[name="categoria"]').value;
+        var autor = document.querySelector('input[name="autor"]').value;
+
+        // Obtener imagen si existe
+        var imagenActual = document.querySelector('input[name="imagen_actual"]');
+        var imagenUrl = imagenActual ? imagenActual.value : '';
+
+        // Crear datos para enviar
+        var previewData = {
+            titulo: titulo,
+            extracto: extracto,
+            contenido: contenido,
+            categoria: categoria,
+            autor: autor,
+            imagen: imagenUrl
+        };
+
+        // Abrir ventana de vista previa
+        var previewWindow = window.open('', 'preview', 'width=1200,height=800,scrollbars=yes');
+
+        // Crear formulario temporal para enviar datos
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'preview.php';
+        form.target = 'preview';
+
+        for (var key in previewData) {
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = previewData[key];
+            form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    }
     </script>
     <?php endif; ?>
 </body>

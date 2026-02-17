@@ -51,9 +51,12 @@ $relacionados = array_slice($relacionados, 0, 3);
                     <li><a href="index.php">Portada</a></li>
                     <li><a href="categoria.php?c=mundo">Mundo</a></li>
                     <li class="dropdown">
-                        <a href="categoria.php?c=sustentabilidad">Sustentabilidad</a>
+                        <a href="categoria.php?c=sustentabilidad">Sustentabilidad ▾</a>
                         <div class="dropdown-menu">
                             <a href="categoria.php?c=gestion-agua">Gestión del Agua</a>
+                            <a href="categoria.php?c=cambio-climatico">Cambio Climático</a>
+                            <a href="categoria.php?c=conservacion">Conservación</a>
+                            <a href="categoria.php?c=economia-circular">Economía Circular</a>
                         </div>
                     </li>
                     <li class="dropdown">
@@ -128,6 +131,39 @@ $relacionados = array_slice($relacionados, 0, 3);
 
     <footer class="footer">
         <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo-text">IDENTIDAD HÍDRICA</div>
+                    <p><?= SITE_SLOGAN ?></p>
+                </div>
+                <div class="footer-column">
+                    <h4>Secciones</h4>
+                    <ul>
+                        <li><a href="categoria.php?c=mundo">Mundo</a></li>
+                        <li><a href="categoria.php?c=sustentabilidad">Sustentabilidad</a></li>
+                        <li><a href="categoria.php?c=agro">Agro</a></li>
+                        <li><a href="categoria.php?c=columnas">Columnas</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Lifestyle</h4>
+                    <ul>
+                        <li><a href="categoria.php?c=gourmet">Agua Gourmet</a></li>
+                        <li><a href="categoria.php?c=recreacion">Recreación</a></li>
+                        <li><a href="categoria.php?c=hidratacion">Hidratación</a></li>
+                        <li><a href="categoria.php?c=tecnologia">Tecnología</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Contacto</h4>
+                    <ul>
+                        <li><a href="mailto:redaccion@identidadhidrica.com.ar">redaccion@identidadhidrica.com.ar</a></li>
+                        <li><a href="mailto:publicidad@identidadhidrica.com.ar">publicidad@identidadhidrica.com.ar</a></li>
+                        <li><a href="videos.php">Podcast</a></li>
+                        <li><a href="nosotros.php">Nosotros</a></li>
+                    </ul>
+                </div>
+            </div>
             <div class="footer-bottom">
                 <span>© <?= date('Y') ?> <?= SITE_NAME ?>. Todos los derechos reservados.</span>
             </div>
