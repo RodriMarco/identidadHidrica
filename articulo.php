@@ -135,6 +135,10 @@ $relacionados = array_slice($relacionados, 0, 3);
                 <div class="footer-brand">
                     <div class="logo-text">IDENTIDAD HÍDRICA</div>
                     <p><?= SITE_SLOGAN ?></p>
+                    <div style="margin-top: 15px;">
+                        <a href="mailto:redaccion@identidadhidrica.com.ar" style="display: block; color: #fff; text-decoration: none; margin-bottom: 8px;">redaccion@identidadhidrica.com.ar</a>
+                        <a href="mailto:publicidad@identidadhidrica.com.ar" style="display: block; color: #fff; text-decoration: none;">publicidad@identidadhidrica.com.ar</a>
+                    </div>
                 </div>
                 <div class="footer-column">
                     <h4>Secciones</h4>
@@ -157,8 +161,6 @@ $relacionados = array_slice($relacionados, 0, 3);
                 <div class="footer-column">
                     <h4>Contacto</h4>
                     <ul>
-                        <li><a href="mailto:redaccion@identidadhidrica.com.ar">redaccion@identidadhidrica.com.ar</a></li>
-                        <li><a href="mailto:publicidad@identidadhidrica.com.ar">publicidad@identidadhidrica.com.ar</a></li>
                         <li><a href="videos.php">Podcast</a></li>
                         <li><a href="nosotros.php">Nosotros</a></li>
                     </ul>
