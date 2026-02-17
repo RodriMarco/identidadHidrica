@@ -13,9 +13,13 @@ nul
 *.log
 error_log
 
-# Uploads de usuarios (opcional - descomenta si no quieres subirlos)
-# uploads/*
-# !uploads/.gitkeep
+# ⚠️ IMPORTANTE: Datos de producción - NO subir al repositorio
+data/*
+!data/.gitkeep
+
+# Uploads de usuarios - NO subir al repositorio
+uploads/*
+!uploads/.gitkeep
 
 # Archivos temporales
 *.tmp
